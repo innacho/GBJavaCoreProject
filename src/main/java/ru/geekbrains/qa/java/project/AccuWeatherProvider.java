@@ -7,10 +7,9 @@ import okhttp3.Request;
 import okhttp3.Response;
 
 import java.io.IOException;
-import java.io.PrintWriter;
 import java.util.ArrayList;
 
-public class AccuWeatherProvider{
+public class AccuWeatherProvider implements WeatherProvider{
 
     private static final String BASE_HOST = "dataservice.accuweather.com";
     private static final String FORECAST_ENDPOINT = "forecasts";
@@ -24,7 +23,7 @@ public class AccuWeatherProvider{
     private final ObjectMapper objectMapper = new ObjectMapper();
     private String selectedCity;
 
-    public void getWeather() throws IOException {
+    public ArrayList<WeatherResponse> getWeather() throws IOException {
         selectedCity = ApplicationGlobalState.getInstance().getSelectedCity();
         String cityKey = detectCityKey();
         HttpUrl url = new HttpUrl.Builder()
@@ -35,7 +34,7 @@ public class AccuWeatherProvider{
                 .addPathSegment(FORECAST_TYPE)
                 .addPathSegment(FORECAST_PERIOD)
                 .addPathSegment(cityKey)
-                .addQueryParameter("apikey", API_KEY)
+                .addQueryParameter("apikeу", API_KEY)
                 .addQueryParameter("language", "ru-ru")
                 .addQueryParameter("metric", "true")
                 .build();
@@ -46,15 +45,16 @@ public class AccuWeatherProvider{
                 .build();
 
         Response response = client.newCall(request).execute();
-        //System.out.println(response.body().string());
+        if(response.code() != 200){
+            return null;
+        }
 
         ArrayList<WeatherResponse> weatherResponses = new ArrayList<>();
         String jsonResponse = response.body().string();
-        //System.out.println(jsonResponse);
-
 
         for (int i = 0; i < 5; i++) {
             WeatherResponse weatherResponse = new WeatherResponse();
+            weatherResponse.setCity(selectedCity);
             String date = objectMapper.readTree(jsonResponse).at("/DailyForecasts").get(i).at("/Date").asText();
             date = date.split("T")[0];
             weatherResponse.setDate(date);
@@ -63,14 +63,9 @@ public class AccuWeatherProvider{
             float temperature = Float.parseFloat(objectMapper.readTree(jsonResponse).at("/DailyForecasts").get(i).at("/Temperature/Maximum/Value").asText());
             weatherResponse.setTemperature(temperature);
             weatherResponses.add(weatherResponse);
-            System.out.println(weatherResponses.get(i).toString());
         }
 
-
-            for (WeatherResponse weatherResp : weatherResponses){
-                System.out.println("В городе "+ selectedCity + weatherResp.toString());
-            }
-
+            return weatherResponses;
     }
 
 

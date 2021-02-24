@@ -1,14 +1,16 @@
 package ru.geekbrains.qa.java.project;
 
-import com.fasterxml.jackson.annotation.JsonGetter;
-import com.fasterxml.jackson.annotation.JsonSetter;
-
 import java.io.Serializable;
 
 public class WeatherResponse implements Serializable {
+    private String city;
     private String date;
     private String weatherText;
-    private float temperature;
+    private Double temperature;
+
+    public String getCity() { return city; }
+
+    public void setCity(String city) { this.city = city; }
 
     public String getDate() { return date; }
 
@@ -18,9 +20,9 @@ public class WeatherResponse implements Serializable {
 
     public void setWeatherText(String weatherText) { this.weatherText = weatherText; }
 
-    public float getTemperature() { return temperature; }
+    public double getTemperature() { return temperature; }
 
-    public void setTemperature(float temperature) { this.temperature = temperature; }
+    public void setTemperature(double temperature) { this.temperature = temperature; }
 
     WeatherResponse(){
 
@@ -28,6 +30,7 @@ public class WeatherResponse implements Serializable {
 
     @Override
     public String toString(){
-        return " на дату " + date +  " днем ожидается " + weatherText + ", температура " + temperature +"C";
+        return String.format("В городе "+ city +" на дату " + date +
+                " днем ожидается " + weatherText + ", температура %.2f C", temperature);
     }
 }

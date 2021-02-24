@@ -5,6 +5,8 @@ package ru.geekbrains.qa.java.project;
         private static ApplicationGlobalState INSTANCE;
         private String selectedCity = null;
         private final String API_KEY = "ZnKd4kTYc68bc36GD8GEqWoC70D6IGMB";
+        private final String DB_FILENAME = "weather.db";
+        private DatabaseRepositorySQLiteImpl myDB = null;
 
         private ApplicationGlobalState() {
         }
@@ -14,7 +16,6 @@ package ru.geekbrains.qa.java.project;
             if(INSTANCE == null) {
                 INSTANCE = new ApplicationGlobalState();
             }
-
             return INSTANCE;
         }
 
@@ -29,4 +30,12 @@ package ru.geekbrains.qa.java.project;
         public String getApiKey() {
             return this.API_KEY;
         }
+
+        public String getDBFilename() {
+            return this.DB_FILENAME;
+        }
+
+        public DatabaseRepositorySQLiteImpl getDB() { return this.myDB; }
+
+        public void setDB(DatabaseRepositorySQLiteImpl myDB) { this.myDB = myDB; }
 }
